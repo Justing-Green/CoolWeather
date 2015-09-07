@@ -1,5 +1,7 @@
 package com.coolweather.app.activity;
 
+import java.util.Calendar;
+
 import com.coolweather.app.R;
 import com.coolweather.app.service.AutoUpdateService;
 import com.coolweather.app.util.HttpCallbackListener;
@@ -10,7 +12,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,9 +23,15 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+/**
+ * 
+ * @author Justing-Green
+ * 下拉效果有不好
+ *
+ */
 public class WeatherActivity extends Activity implements OnClickListener {
 	private LinearLayout weatherInfoLayout;
+	private LinearLayout weatherBackgraound;
 	private TextView cityNameText;
 	private TextView publishText;
 	private TextView weatherDespText;
@@ -29,7 +40,8 @@ public class WeatherActivity extends Activity implements OnClickListener {
 	private TextView currentDateText;
 	private Button switchCity;
 	private Button refreshWeather;
-//	private SwipeRefreshLayout swipeRefreshLayout;
+	private Button setting;
+	private SwipeRefreshLayout swipeRefreshLayout;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,6 +49,8 @@ public class WeatherActivity extends Activity implements OnClickListener {
 		setContentView(R.layout.weather_layout);
 		weatherInfoLayout = (LinearLayout) findViewById(R.id
 				.weather_info_layout);
+		weatherBackgraound = (LinearLayout) findViewById(R.id.
+				weather_background);
 		cityNameText = (TextView) findViewById(R.id.city_name);
 		publishText = (TextView) findViewById(R.id.publish_text);
 		weatherDespText = (TextView) findViewById(R.id.weather_desp);
@@ -54,37 +68,65 @@ public class WeatherActivity extends Activity implements OnClickListener {
 		}
 		switchCity = (Button) findViewById(R.id.switch_city);
 		refreshWeather = (Button) findViewById(R.id.refresh_weather);
+		setting = (Button) findViewById(R.id.setting);
 		switchCity.setOnClickListener(this);
 		refreshWeather.setOnClickListener(this);
-//		//下拉刷新
-//		swipeRefreshLayout = (SwipeRefreshLayout) findViewById
-//				(R.id.swipeRefreshLayout);
-//		//设置卷内的颜色
-//		swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
-//				android.R.color.holo_green_light, android.R.color.holo_orange_light,
-//				android.R.color.holo_red_light);
-//		//设置下拉刷新监听
-//		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
-//			@Override
-//			public void onRefresh() {
-//				new Handler().postDelayed(new Runnable() {
-//					public void run() {
-//						publishText.setText("同步中...");
-//						SharedPreferences prefs = PreferenceManager
-//								.getDefaultSharedPreferences(WeatherActivity.
-//										this);
-//						String weatherCode = prefs.getString("weather_code", "");
-//						if (!TextUtils.isEmpty(weatherCode)) {
-//							queryWeatherCode(weatherCode);
-//						}
-//						//停止刷新动画
-//						swipeRefreshLayout.setRefreshing(false);
-//					}
-//				}, 3000);
-//			}
-//		});
+		setting.setOnClickListener(this);
+		//下拉刷新
+		swipeRefreshLayout = (SwipeRefreshLayout) findViewById
+				(R.id.swipeRefreshLayout);
+		//设置卷内的颜色
+		swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light,
+				android.R.color.holo_green_light, android.R.color.holo_orange_light,
+				android.R.color.holo_red_light);
+		//设置下拉刷新监听
+		swipeRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						publishText.setText("同步中...");
+						SharedPreferences prefs = PreferenceManager
+								.getDefaultSharedPreferences(WeatherActivity.
+										this);
+						String weatherCode = prefs.getString("weather_code", "");
+						if (!TextUtils.isEmpty(weatherCode)) {
+							queryWeatherInfo(weatherCode);
+						}
+						//停止刷新动画
+						swipeRefreshLayout.setRefreshing(false);
+					}
+				}, 8000);
+			}
+		});
 	}
-
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.switch_city:
+			Intent intent = new Intent(this, ChooseAreaActivity.class);
+			intent.putExtra("from_weather_activity", true);
+			startActivity(intent);
+			finish();
+			break;
+		case R.id.refresh_weather:
+			publishText.setText("同步中...");
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences
+					(this);
+			String weatherCode = prefs.getString("weather_code", "");
+			if (!TextUtils.isEmpty(weatherCode)) {
+				queryWeatherInfo(weatherCode);
+			}
+			break;
+		case R.id.setting:
+			Intent intent2 = new Intent(this, SettingActivity.class);
+			startActivity(intent2);
+			finish();
+		default:
+			break;
+		}
+	}
 	private void queryWeatherCode(String countyCode) {
 		String address = "http://www.weather.com.cn/data/list3/city" + 
 	countyCode + ".xml";
@@ -135,9 +177,10 @@ public class WeatherActivity extends Activity implements OnClickListener {
 			}
 		});
 	}
+	
 	private void showWeather() {
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
+		SharedPreferences prefs = PreferenceManager.
+				getDefaultSharedPreferences(this);
 		cityNameText.setText(prefs.getString("city_name", ""));
 		temp1Text.setText(prefs.getString("temp2", ""));
 		temp2Text.setText(prefs.getString("temp1", ""));
@@ -145,32 +188,42 @@ public class WeatherActivity extends Activity implements OnClickListener {
 		publishText.setText("今天" + prefs.getString("publish_time", "") 
 				+ "发布");
 		currentDateText.setText(prefs.getString("current_date", ""));
+		setBackground_weather();
 		weatherInfoLayout.setVisibility(View.VISIBLE);
 		cityNameText.setVisibility(View.VISIBLE);
 		Intent intent = new Intent(this, AutoUpdateService.class);
 		startService(intent);
 	}
-
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.switch_city:
-			Intent intent = new Intent(this, ChooseAreaActivity.class);
-			intent.putExtra("from_weather_activity", true);
-			startActivity(intent);
-			finish();
-			break;
-		case R.id.refresh_weather:
-			publishText.setText("同步中...");
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences
-					(this);
-			String weatherCode = prefs.getString("weather_code", "");
-			if (!TextUtils.isEmpty(weatherCode)) {
-				queryWeatherCode(weatherCode);
+	/**
+	 * 根据相应天气修改背景图片，这里这给出了晴天、多云、阴天的情况，其他情况如小雨，多云转阵雨等
+	 * 均为给出
+	 */
+	private void setBackground_weather() {
+	SharedPreferences prefs = PreferenceManager.
+			getDefaultSharedPreferences(this);
+		Calendar calendar  = Calendar.getInstance();
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		if ("阴".equals(prefs.getString("weather_desp", "")) || 
+				"多云".equals(prefs.getString("weather_desp", ""))) {
+			if (hour <= 17) {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.cloudy_day));
+			} else {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.cloudy_night));
 			}
-			break;
-		default:
-			break;
-		}
+		} else if ("晴".equals(prefs.getString("weather_desp", ""))) {
+			if (hour <= 17) {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.sunny_day));
+			} else {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.sunny_night));
+			}
+		} 
+//			else {
+//			weatherBackgraound.setBackground(getResources().getDrawable(
+//					R.drawable.background));
+//		}
 	}
 }
