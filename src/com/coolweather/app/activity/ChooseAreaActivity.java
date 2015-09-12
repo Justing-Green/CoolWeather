@@ -174,7 +174,6 @@ public class ChooseAreaActivity extends Activity {
 							if ("province".equals(type)) {
 								queryProvinces();
 							} else if ("city".equals(type)) {
-								Log.d("level_city", type);
 								queryCities();
 							} else if ("county".equals(type)) {
 								queryCounties();

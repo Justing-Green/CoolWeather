@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -97,7 +98,7 @@ public class WeatherActivity extends Activity implements OnClickListener {
 						//Í£Ö¹Ë¢ÐÂ¶¯»­
 						swipeRefreshLayout.setRefreshing(false);
 					}
-				}, 8000);
+				}, 1000);
 			}
 		});
 	}
