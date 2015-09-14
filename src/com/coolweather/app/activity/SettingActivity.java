@@ -79,14 +79,16 @@ public class SettingActivity extends Activity {
 						case 0:
 							Intent intent = new Intent(SettingActivity.this,
 									AutoUpdateService.class);
-							intent.putExtra("choose", 1);
 							startService(intent);
+							Toast.makeText(SettingActivity.this, "您已经开启了后台更新服务",
+									Toast.LENGTH_SHORT).show();
 							break;
 						case 1:
 							Intent intent2 = new Intent(SettingActivity.this,
 									AutoUpdateService.class);
-							intent2.putExtra("choose", 2);
-							startService(intent2);
+							stopService(intent2);
+							Toast.makeText(SettingActivity.this, "您已经关闭了后台更新服务",
+									Toast.LENGTH_SHORT).show();
 							break;
 						default:
 							break;
@@ -107,22 +109,36 @@ public class SettingActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						Intent intent = new Intent(SettingActivity.this,
 								AutoUpdateService.class);
-						intent.putExtra("choose", 1);
 						switch (which) {
 						case 0:
 							intent.putExtra("frequency", 0.5);
+							Toast.makeText(SettingActivity.this,
+									"后台每半小时更新一次",Toast.LENGTH_SHORT).
+									show();
 							break;
 						case 1:
 							intent.putExtra("frequency", 1.0);
+							Toast.makeText(SettingActivity.this,
+									"后台每一小时更新一次",Toast.LENGTH_SHORT).
+									show();
 							break;
 						case 2:
 							intent.putExtra("frequency", 2.0);
+							Toast.makeText(SettingActivity.this,
+									"后台每两小时更新一次",Toast.LENGTH_SHORT).
+									show();
 							break;
 						case 3:
 							intent.putExtra("frequency", 4.0);
+							Toast.makeText(SettingActivity.this,
+									"后台每四小时更新一次",Toast.LENGTH_SHORT).
+									show();
 							break;
 						case 4:
 							intent.putExtra("frequency", 8.0);
+							Toast.makeText(SettingActivity.this,
+									"后台每八小时更新一次",Toast.LENGTH_SHORT).
+									show();
 							break;
 						default:
 							break;

@@ -17,7 +17,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -25,10 +24,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 /**
- * 
  * @author Justing-Green
  * 下拉效果有不好
- *
  */
 public class WeatherActivity extends Activity implements OnClickListener {
 	private LinearLayout weatherInfoLayout;
@@ -106,8 +103,10 @@ public class WeatherActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.switch_city:
-			Intent intent = new Intent(this, ChooseAreaActivity.class);
-			intent.putExtra("from_weather_activity", true);
+			Intent intent = new Intent(WeatherActivity.this,
+					ConcernedCityActivity.class);
+//			Intent intent = new Intent(this, ChooseAreaActivity.class);
+//			intent.putExtra("from_weather_activity", true);
 			startActivity(intent);
 			finish();
 			break;

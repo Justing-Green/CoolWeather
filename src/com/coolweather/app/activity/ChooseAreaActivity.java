@@ -19,7 +19,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -45,16 +44,27 @@ public class ChooseAreaActivity extends Activity {
 	private Province selectedProvince;
 	private City selectedCity;
 	private int currentLevel;
-	private boolean isFromWeatherActivity;
+//	private boolean isFromWeatherActivity;
+	private boolean isFromConcernedCity;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		isFromWeatherActivity = getIntent().getBooleanExtra
-				("from_weather_activity", false);
+//		isFromWeatherActivity = getIntent().getBooleanExtra
+//				("from_weather_activity", false);
+		isFromConcernedCity = getIntent().getBooleanExtra
+				("from_concerned_city", false);
 		SharedPreferences prefs = PreferenceManager.
 				getDefaultSharedPreferences(this);
+//		if (prefs.getBoolean("city_selected", false) 
+//				&& !isFromWeatherActivity) {
+//			Intent intent = new Intent(this, WeatherActivity.class);
+//			startActivity(intent);
+//			finish();
+//			return;
+//		}
 		if (prefs.getBoolean("city_selected", false) 
-				&& !isFromWeatherActivity) {
+				&& !isFromConcernedCity) {
+//			concernedCityActivity.inits();
 			Intent intent = new Intent(this, WeatherActivity.class);
 			startActivity(intent);
 			finish();
@@ -221,8 +231,8 @@ public class ChooseAreaActivity extends Activity {
 		} else if (currentLevel == LEVEL_CITY) {
 			queryProvinces();
 		} else {
-			if (isFromWeatherActivity) {
-				Intent intent = new Intent(this, WeatherActivity.class);
+			if (isFromConcernedCity) {
+				Intent intent = new Intent(this, ConcernedCityActivity.class);
 				startActivity(intent);
 			}
 			finish();
