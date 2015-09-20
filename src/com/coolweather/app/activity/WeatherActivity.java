@@ -56,7 +56,13 @@ public class WeatherActivity extends Activity implements OnClickListener {
 		temp2Text = (TextView) findViewById(R.id.temp2);
 		currentDateText = (TextView) findViewById(R.id.current_date);
 		String countyCode = getIntent().getStringExtra("county_code");
-		if (!TextUtils.isEmpty(countyCode)) {
+		String cityId = getIntent().getStringExtra("cityIdFromConcerned");
+		if (!TextUtils.isEmpty(cityId)) {
+			publishText.setText("同步中...");
+			weatherInfoLayout.setVisibility(View.INVISIBLE);
+			cityNameText.setVisibility(View.INVISIBLE);
+			queryWeatherInfo(cityId);
+		} else if (!TextUtils.isEmpty(countyCode)) {
 			publishText.setText("同步中...");
 			weatherInfoLayout.setVisibility(View.INVISIBLE);
 			cityNameText.setVisibility(View.INVISIBLE);
@@ -220,10 +226,31 @@ public class WeatherActivity extends Activity implements OnClickListener {
 				weatherBackgraound.setBackground(getResources().getDrawable(
 						R.drawable.sunny_night));
 			}
-		} 
-//			else {
-//			weatherBackgraound.setBackground(getResources().getDrawable(
-//					R.drawable.background));
-//		}
+		} else if ("小雨".equals(prefs.getString("weather_desp", ""))) {
+			if (hour <= 17) {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.littlerian_day));
+			} else {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.littlerian_night));
+			}
+		} else if ("阵雨".equals(prefs.getString("weather_desp", ""))|| 
+				"雷阵雨".equals(prefs.getString("weather_desp", ""))) {
+			if (hour <= 17) {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.shower_day));
+			} else {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.shower_night));
+			}
+		} else if ("暴雨".equals(prefs.getString("weather_desp", ""))) {
+			if (hour <= 17) {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.rianstrom_day));
+			} else {
+				weatherBackgraound.setBackground(getResources().getDrawable(
+						R.drawable.rianstrom_night));
+			}
+		}
 	}
 }
